@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Novel2VN</title>
+    </head>
+    <body>
+        <style>
+            body {
+                background-color: rgb(29, 29, 29);
+            }
+
+            div {
+               display: flex;
+               flex-direction: column;
+               align-items: center;
+               color: rgb(187, 187, 187); 
+            }
+
+            #lines {
+                font-size: 28px;
+                
+                font-family: 'Montserrat', 'Mplus 1p', 'Hiragino Sans', 'Hiragino Kaku Gothic Pro', '游ゴシック' , '游ゴシック体' , YuGothic , 'Yu Gothic', 'ＭＳ ゴシック' , 'MS Gothic', sans-serif;
+            }
+
+            #floating_text {
+                background-color: rgb(66, 66, 66);
+                position: fixed;
+                top: 10px;
+                right: 10px;
+                
+                width: 100px;
+                font-family: 'Courier New', Courier, monospace;
+                font-size: small;
+            }
+
+            button {
+                position: fixed;
+                right: 10px;
+                bottom: 10px;
+
+                background-color: #af4c4c; /* Green */
+                border: none;
+                color: white;
+                padding: 15px 32px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 16px;
+            }
+        </style>
+       
+        <div>
+            <input type="file">
+            <p>
+            <p>
+            <div id="floating_text">
+                <p id="counter">0 / 0</p> 
+            </div>
+            <div id="lines">
+                <p id="line">
+                    Select a file to read.
+                </p>
+            </div>
+            <button type="button" onclick="NextLine()">Next</button>
+            <p>
+            <p>
+            <p>
+            <p>
+            <p>
+            <p>
+            <p>
+            <p>
+        </div>
+        <script>
+            let input = document.querySelector('input');
+            let area = document.getElementById('area');
+            
+            let textArray = [];
+            let linePos = 0;
+            let charCount = 0;
+
+            input.addEventListener('change', () =>{
+                // Extract the text from the epub file.
+                textArray = [];
+                const reader = new FileReader();
+                reader.onload = function () {
+                    const lines = reader.result.split('\n').map(function (line){
+                        if (line != "\r") {
+                            var text = line.split(/(。」！？)/g) + "";
+                            var result = text.replace('\r', '');
+                            textArray.push(result);
+                        }
+                    })
+
+                    charCount += textArray[0].length;
+                    document.getElementById("counter").innerHTML = charCount + " / " + (linePos + 1)
+                    document.getElementById("line").innerHTML = textArray[0];
+
+                }
+                reader.readAsText(input.files[0]);
+                
+                console.log(textArray.length);
+            });
+
+            function NextLine() {
+                if (textArray != null && linePos < textArray.length) {
+                    linePos++;
+                    var lineText = document.getElementById("line").cloneNode(true);
+                    lineText.id += ("line-" + linePos);
+                    lineText.innerHTML = textArray[linePos] + "<p>";
+                    document.getElementById("lines").appendChild(lineText);
+
+                    charCount += textArray[linePos].length;
+                    document.getElementById("counter").innerHTML = charCount + " / " + (linePos + 1)
+                } else {
+                    console.log("textArray is not set or complete.");
+                }
+            }
+
+            document.addEventListener("keypress", function(event) {
+	            // Add new line when space bar is pressed
+                if (event.keyCode === 32) {
+                    NextLine();
+                }
+            });
+        </script>
+    </body>
+</html>
