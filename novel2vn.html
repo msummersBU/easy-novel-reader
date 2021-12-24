@@ -53,7 +53,7 @@
        
         <div>
             <input type="file">
-            <p>
+            
             <p>
             <div id="floating_text">
                 <p id="counter">0 / 0</p> 
@@ -63,7 +63,7 @@
                     Select a file to read.
                 </p>
             </div>
-            <button type="button" onclick="NextLine()">Next</button>
+            <button type="button" onclick="NextButton()"></button>
             <p>
             <p>
             <p>
@@ -77,20 +77,40 @@
             let input = document.querySelector('input');
             let area = document.getElementById('area');
             
-            let textArray = [];
+            let textArray = new Array();
             let linePos = 0;
             let charCount = 0;
 
+            // Get from local storage.
+
+            if (localStorage.getItem("book") != null) {
+                try {
+                    textArray = JSON.parse(localStorage.getItem("book"));
+                    document.getElementById("line").innerHTML = textArray[0];
+                    
+                    for (let i = 0; i <= localStorage.getItem("pos"); i++) {
+                        NextLine();
+                    }
+                } catch (e) {
+                    console.log(e);
+                }
+            }
+            
+
             input.addEventListener('change', () =>{
-                // Extract the text from the epub file.
+                // Extract the text from the text file.
+                RemoveAll();
+
                 textArray = [];
+                charCount = 0;
+                linePos = 0;
                 const reader = new FileReader();
                 reader.onload = function () {
                     const lines = reader.result.split('\n').map(function (line){
                         if (line != "\r") {
                             var text = line.split(/(。」！？)/g) + "";
                             var result = text.replace('\r', '');
-                            textArray.push(result);
+                            textArray.push(result.toString());
                         }
                     })
 
@@ -98,17 +118,27 @@
                     document.getElementById("counter").innerHTML = charCount + " / " + (linePos + 1)
                     document.getElementById("line").innerHTML = textArray[0];
 
+                    localStorage.setItem("book", JSON.stringify(textArray));
+                    console.log(JSON.stringify(textArray));
                 }
                 reader.readAsText(input.files[0]);
                 
-                console.log(textArray.length);
+                
+                
+                localStorage.setItem("pos", linePos);
             });
 
+            function NextButton() {
+                localStorage.setItem("pos", linePos);
+                NextLine();
+            }
+
             function NextLine() {
-                if (textArray != null && linePos < textArray.length) {
+                if (textArray != null && linePos < (textArray.length - 1)) {
                     linePos++;
+
                     var lineText = document.getElementById("line").cloneNode(true);
-                    lineText.id += ("line-" + linePos);
+                    lineText.id += ("-" + linePos);
                     lineText.innerHTML = textArray[linePos] + "<p>";
                     document.getElementById("lines").appendChild(lineText);
 
@@ -119,12 +149,26 @@
                 }
             }
 
+            function RemoveAll() {
+                for (let i = 0; i < linePos; i++) {
+                    let lineEl = document.getElementById("line-" + (i+1));
+                    lineEl.remove();
+                }
+            }
+
             document.addEventListener("keypress", function(event) {
 	            // Add new line when space bar is pressed
                 if (event.keyCode === 32) {
+                    localStorage.setItem("pos", linePos+1);
                     NextLine();
                 }
             });
+
+            function toBottom()
+            {
+                window.scrollTo(0, document.body.scrollHeight);
+            }
+            window.onload=toBottom;
         </script>
     </body>
 </html>
