@@ -84,11 +84,15 @@
             // Get from local storage.
 
             if (localStorage.getItem("book") != null) {
-                textArray = JSON.parse(localStorage.getItem("book"));
-                document.getElementById("line").innerHTML = textArray[0];
-                
-                for (let i = 0; i <= localStorage.getItem("pos"); i++) {
-                    NextLine();
+                try {
+                    textArray = JSON.parse(localStorage.getItem("book"));
+                    document.getElementById("line").innerHTML = textArray[0];
+                    
+                    for (let i = 0; i <= localStorage.getItem("pos"); i++) {
+                        NextLine();
+                    }
+                } catch (e) {
+                    console.log(e);
                 }
             }
             
