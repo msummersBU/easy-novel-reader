@@ -106,7 +106,7 @@
                         if (line != "\r") {
                             var text = line.split(/(。」！？)/g) + "";
                             var result = text.replace('\r', '');
-                            textArray.push(result);
+                            textArray.push(result.toString());
                         }
                     })
 
