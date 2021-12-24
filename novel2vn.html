@@ -81,9 +81,20 @@
             let linePos = 0;
             let charCount = 0;
 
+            // Get from local storage.
+
+            textArray = localStorage.getItem("book");
+            
+            for (let i = 0; i <= localStorage.getItem("pos"); i++) {
+                NextLine();
+            }
+            
+
             input.addEventListener('change', () =>{
                 // Extract the text from the epub file.
                 textArray = [];
+                charCount = 0;
+                linePos = 0;
                 const reader = new FileReader();
                 reader.onload = function () {
                     const lines = reader.result.split('\n').map(function (line){
@@ -98,14 +109,16 @@
                     document.getElementById("counter").innerHTML = charCount + " / " + (linePos + 1)
                     document.getElementById("line").innerHTML = textArray[0];
 
+                    localStorage.setItem("book", textArray);
+                    localStorage.setItem("pos", linePos);
                 }
                 reader.readAsText(input.files[0]);
                 
-                console.log(textArray.length);
+                //console.log(textArray.length);
             });
 
             function NextLine() {
-                if (textArray != null && linePos < textArray.length) {
+                if (textArray != null && linePos < (textArray.length - 1)) {
                     linePos++;
                     var lineText = document.getElementById("line").cloneNode(true);
                     lineText.id += ("line-" + linePos);
