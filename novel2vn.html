@@ -83,7 +83,7 @@
 
             // Get from local storage.
 
-            if (localStorage.getItem("book") != []) {
+            if (localStorage.getItem("book") != null) {
                 textArray = JSON.parse(localStorage.getItem("book"));
                 document.getElementById("line").innerHTML = textArray[0];
                 
